@@ -3,7 +3,7 @@ package Control;
 import Model.AccessDB;
 import Model.MovieSerie;
 import Model.OMDBQuery;
-import View.PanelTowerFrame;
+import View.ViewList;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -13,11 +13,11 @@ public class MyMoviesDataBase {
     private static ArrayList<MovieSerie>  movies;
 
     public static void main(String[] args) throws IOException {
-        movies = OMDBQuery.moviesInformationFromDirectory("G:\\Filmes");
-//        OMDBQuery.moviesInformationFromName("Birdman or (The Unexpected Virtue of Ignorance) 2014 1080p BRRip x264 DTS-JYK")
-//        movies.addAll(OMDBQuery.moviesInformationFromName("Birdman or (The Unexpected Virtue of Ignorance) 2014 1080p BRRip x264 DTS-JYK"));
+        movies = OMDBQuery.moviesInformationFromDirectory("C:\\Users\\hugo\\Documents\\Vuze Downloads");
+//        movies = OMDBQuery.moviesInformationFromName("Passengers");
 
-        PanelTowerFrame panel = new PanelTowerFrame(movies.size(), movies);
+        //show result in UI
+        new ViewList(movies);
 
         try {
             //config resources to access database
@@ -40,11 +40,21 @@ public class MyMoviesDataBase {
             //commit database alterations
             AccessDB.setAutoCommit(true);
 
-            //close connection
-            AccessDB.closeConnection();
-
         } catch (SQLException e) {
+            try {
+                //Rollback changes and get back to previous state
+                AccessDB.execRollback();
+            } catch (SQLException e1) {
+                e1.printStackTrace();
+            }
             e.printStackTrace();
+        }finally {
+            try {
+                //close connection
+                AccessDB.closeConnection();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
         }
 
     }

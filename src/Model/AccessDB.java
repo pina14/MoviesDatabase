@@ -167,4 +167,8 @@ public class AccessDB {
     public static void setAutoCommit(boolean commitState) throws SQLException {
         conn.setAutoCommit(commitState);
     }
+
+    public static void execRollback() throws SQLException {
+        conn.rollback();
+    }
 }

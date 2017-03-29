@@ -58,10 +58,8 @@ public class OMDBQuery {
         boolean successNFail = false;
 
         try {
-
             InputStream input = new URL("http://www.omdbapi.com/?t=" + URLEncoder.encode(movieName, "UTF-8")).openStream();
-            Map<String, String> map = new Gson().fromJson(new InputStreamReader(input, "UTF-8"), new TypeToken<Map<String, String>>() {
-            }.getType());
+            Map<String, String> map = new Gson().fromJson(new InputStreamReader(input, "UTF-8"), new TypeToken<Map<String, String>>(){}.getType());
 
             //movie ID
             String ID = map.get("imdbID");
@@ -123,12 +121,6 @@ public class OMDBQuery {
             if (ID == null) {
                 System.out.println(movieName + " not Found!");
             } else {
-/*                //save in database
-                AccessDB.insertMovie(ID, title, type, plot, released, imdbRating, runtime, poster);     //insert in table movie
-                AccessDB.insertActor(actors);                                                           //insert in table actor
-                AccessDB.insertGenre(genres);                                                           //insert in table genre
-                AccessDB.insertMovieActor(ID, actors, title);                                           //insert in table movieActor
-                AccessDB.insertMovieGenre(ID, genres, title);                                           //insert in table movieGenre*/
 
                 //set insertion in data base successful
                 successNFail = true;
@@ -136,7 +128,7 @@ public class OMDBQuery {
                 //add Movie/Serie to array
                 movies.add(new MovieSerie(ID, type, title, released, genres, actors, plot, imdbRating, runtime, poster));
 
-            /*    //print in console
+                /*//print in console
                 System.out.println("ID: " + ID);
                 System.out.println("Type: " + type);
                 System.out.println("Title: " + title);
@@ -213,7 +205,7 @@ public class OMDBQuery {
                 break;
             }
         }
-        return movieName;
+        return movieName.replace(".", " ");
     }
 
     //Get file names for all the folders in a folder

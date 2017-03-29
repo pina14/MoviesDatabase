@@ -53,7 +53,7 @@
         <SOURCES />
       </library>
     </orderEntry>
-    <orderEntry type="library" name="gson-2.2.2" level="project" />
     <orderEntry type="library" name="sqljdbc4" level="project" />
+    <orderEntry type="library" name="gson-2.7" level="project" />
   </component>
 </module>
