@@ -13,6 +13,7 @@ public class MyMoviesDataBase {
     private static ArrayList<MovieSerie>  movies;
 
     public static void main(String[] args) throws IOException {
+//        movies = OMDBQuery.moviesInformationFromDirectory("F:\\Filmes");
         movies = OMDBQuery.moviesInformationFromDirectory("C:\\Users\\hugo\\Documents\\Vuze Downloads");
 //        movies = OMDBQuery.moviesInformationFromName("Passengers");
 
@@ -56,6 +57,5 @@ public class MyMoviesDataBase {
                 e.printStackTrace();
             }
         }
-
     }
 }

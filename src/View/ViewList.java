@@ -4,7 +4,6 @@ import Model.MovieSerie;
 
 import javax.swing.*;
 import java.awt.*;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -16,7 +15,6 @@ public class ViewList {
     private final Map<String, ImageIcon> imageMap;
 
     public ViewList(ArrayList<MovieSerie> movies) {
-//        String[] nameList = {"Mario", "Luigi", "Bowser", "Koopa", "Princess"};
         String[] nameList = getNameList(movies);
         ImageIcon[] imageURL = getImageIcon(movies);
         imageMap = createImageMap(nameList, imageURL);
@@ -61,7 +59,7 @@ public class ViewList {
 
             JLabel label = (JLabel) super.getListCellRendererComponent(
                     list, value, index, isSelected, cellHasFocus);
-            label.setIcon(imageMap.get((String) value));
+            label.setIcon(imageMap.get(value));
             label.setHorizontalTextPosition(JLabel.RIGHT);
             label.setFont(font);
             return label;
@@ -71,14 +69,8 @@ public class ViewList {
     private Map<String, ImageIcon> createImageMap(String[] names, ImageIcon[] imageURL) {
         Map<String, ImageIcon> map = new HashMap<>();
         try {
-            for (int i = 0; i < names.length; i++) {
+            for (int i = 0; i < names.length; i++)
                 map.put(names[i], imageURL[i]);
-            }
-            /*map.put("Mario", new ImageIcon(new URL("http://i.stack.imgur.com/NCsHu.png")));
-            map.put("Luigi", new ImageIcon(new URL("http://i.stack.imgur.com/UvHN4.png")));
-            map.put("Bowser", new ImageIcon(new URL("http://i.stack.imgur.com/s89ON.png")));
-            map.put("Koopa", new ImageIcon(new URL("http://i.stack.imgur.com/QEK2o.png")));
-            map.put("Princess", new ImageIcon(new URL("http://i.stack.imgur.com/f4T4l.png")));*/
         } catch (Exception ex) {
             ex.printStackTrace();
         }

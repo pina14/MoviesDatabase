@@ -4,10 +4,7 @@ import com.google.gson.Gson;
 import com.google.gson.JsonIOException;
 import com.google.gson.JsonSyntaxException;
 import com.google.gson.reflect.TypeToken;
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
+import java.io.*;
 import java.net.URL;
 import java.net.URLEncoder;
 import java.util.ArrayList;
@@ -58,8 +55,10 @@ public class OMDBQuery {
         boolean successNFail = false;
 
         try {
-            InputStream input = new URL("http://www.omdbapi.com/?t=" + URLEncoder.encode(movieName, "UTF-8")).openStream();
-            Map<String, String> map = new Gson().fromJson(new InputStreamReader(input, "UTF-8"), new TypeToken<Map<String, String>>(){}.getType());
+            String urlIn = "http://www.omdbapi.com/?t=" + URLEncoder.encode(movieName, "UTF-8");
+            InputStream input = new URL(urlIn).openStream();
+            InputStreamReader reader = new InputStreamReader(input, "UTF-8"); //codificado em UTF-8
+            Map<String, String> map = new Gson().fromJson(reader, new TypeToken<Map<String, Object>>(){}.getType()); //tem de ser object pois os ratings são arrays e o resto são strings
 
             //movie ID
             String ID = map.get("imdbID");
