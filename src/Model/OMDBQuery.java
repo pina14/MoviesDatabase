@@ -14,16 +14,17 @@ import java.util.Map;
 /**
  * Created by hugo on 15/03/2017.
  */
+
 public class OMDBQuery {
 
-    private static ArrayList<MovieSerie> movies = new ArrayList<>();
+    public static ArrayList<Movie> moviesInformationFromDirectory(String directory) {
+        ArrayList<Movie> movies = new ArrayList<>();
 
-    public static ArrayList<MovieSerie> moviesInformationFromDirectory(String directory) {
         ArrayList<String> movieNames = getFiles(directory);
         int countSuccess = 0, countFail = 0;
 
         for (String movieName : movieNames) {
-            if(getMoviesInfo(movieName))
+            if(getMoviesInfo(movieName, movies))
                 countSuccess++;
             else
                 countFail++;
@@ -35,12 +36,14 @@ public class OMDBQuery {
         return movies;
     }
 
-    public static ArrayList<MovieSerie> moviesInformationFromName(String movieName) {
+    public static ArrayList<Movie> moviesInformationFromName(String movieName) {
+        ArrayList<Movie> movies = new ArrayList<>();
+
         int countSuccess = 0, countFail = 0;
 
         movieName = filterMovieName(movieName);
 
-        if(getMoviesInfo(movieName))
+        if(getMoviesInfo(movieName, movies))
             countSuccess++;
         else
             countFail++;
@@ -51,11 +54,11 @@ public class OMDBQuery {
         return movies;
     }
 
-    private static boolean getMoviesInfo(String movieName) {
+    private static boolean getMoviesInfo(String movieName, ArrayList<Movie> movies) {
         boolean successNFail = false;
 
         try {
-            String urlIn = "http://www.omdbapi.com/?t=" + URLEncoder.encode(movieName, "UTF-8");
+            String urlIn = "http://www.omdbapi.com/?&apikey=7b4152d4&t="+URLEncoder.encode(movieName, "UTF-8"); //+URLEncoder.encode("Life in Pieces", "UTF-8")+"&Season=2";
             InputStream input = new URL(urlIn).openStream();
             InputStreamReader reader = new InputStreamReader(input, "UTF-8"); //codificado em UTF-8
             Map<String, String> map = new Gson().fromJson(reader, new TypeToken<Map<String, Object>>(){}.getType()); //tem de ser object pois os ratings são arrays e o resto são strings
@@ -105,7 +108,7 @@ public class OMDBQuery {
             String genre = map.get("Genre");
             String[] genres = null;
             if (genre != null)
-                genres = genre.split(",");
+                genres = genre.split(", ");
 
             //actor
             String actor = map.get("Actors");
@@ -114,7 +117,7 @@ public class OMDBQuery {
                 if(actor.contains("'"))
                     actor = actor.replace("'", "`");
 
-                actors = actor.split(",");
+                actors = actor.split(", ");
             }
 
             if (ID == null) {
@@ -124,27 +127,33 @@ public class OMDBQuery {
                 //set insertion in data base successful
                 successNFail = true;
 
-                //add Movie/Serie to array
-                movies.add(new MovieSerie(ID, type, title, released, genres, actors, plot, imdbRating, runtime, poster));
+/*                //add Serie to array
+                if(type != null && type.equals("series")){
+                    String totalSeasons = map.get("totalSeasons");
+                    Serie serie = new Serie(ID, type, title, released, genres, actors, plot, imdbRating, runtime, poster, totalSeasons);
+                    boolean isUpToDate = checkUpToDate(serie, movieName, directory);
+                    serie.setUpToDate(isUpToDate);
+                    series.add(serie);
+                }*/
+//                else //add movie to array
 
-                /*//print in console
-                System.out.println("ID: " + ID);
-                System.out.println("Type: " + type);
-                System.out.println("Title: " + title);
-                System.out.println("Released: " + released);
-                System.out.println("Genre: " + genre);
-                System.out.println("Actors: " + actor);
-                System.out.println("Plot: " + plot);
-                System.out.println("IMDB Rating: " + imdbRating);
-                System.out.println("Runtime: " + runtime);
-                System.out.println("Poster: " + poster);
-                System.out.println();*/
+                if(!movieAlreadyExistst(movies, ID))
+                    movies.add(new Movie(ID, type, title, released, genres, actors, plot, imdbRating, runtime, poster));
             }
 
         } catch (JsonIOException | JsonSyntaxException | IOException e) {
             e.printStackTrace();
         }
         return successNFail;
+    }
+
+    private static boolean movieAlreadyExistst(ArrayList<Movie> movies, String id) {
+        for (Movie movie : movies) {
+            if(movie.getId().equals(id))
+                return true;
+        }
+
+        return false;
     }
 
     private static String transformDate(String s) {
@@ -211,6 +220,7 @@ public class OMDBQuery {
     private static ArrayList<String> getFiles(String directoryName) {
         File[] res = new File(directoryName).listFiles();
         ArrayList<String> total = new ArrayList<>();
+//        File aux = null;
 
         if(res != null) {
             for (File f : res) {
@@ -224,9 +234,12 @@ public class OMDBQuery {
                     for (File file : files) {
                         if (file.getName().contains("Season") || file.getName().contains("Book") || file.getName().contains("Temporada")) {
                             isSeason = true;
+//                            aux = file;
                             break;
                         }
                     }
+
+//                    lastEpisodeOfSerie(aux, f.getName());
 
                     if (files[0].isDirectory() && !isSeason)
                         Collections.addAll(total, filterFilesNames(files));
@@ -237,5 +250,48 @@ public class OMDBQuery {
         }
         return total;
     }
+
+    /********************code about series and the last episode***********/
+
+/*    private static boolean checkUpToDate(Serie serie, String movieName, String directory) throws IOException {
+        String urlIn = "http://www.omdbapi.com/?t="+URLEncoder.encode(serie.getTitle(), "UTF-8")+"&Season="+serie.getNumSeasons();
+        InputStream input = new URL(urlIn).openStream();
+        InputStreamReader reader = new InputStreamReader(input, "UTF-8"); //codificado em UTF-8
+        Map<String, Object> map = new Gson().fromJson(reader, new TypeToken<Map<String, Object>>(){}.getType()); //tem de ser object pois os ratings são arrays e o resto são strings
+
+        ArrayList<LinkedTreeMap> episodes = (ArrayList<LinkedTreeMap>)map.get("Episodes");
+
+        int lastEpisodeNumber = Integer.parseInt(String.valueOf(episodes.get(episodes.size()-1).get("Episode")));
+
+        if(lastEpisodeNumber == filterLastEpisodeNumber(movieName, directory))
+            return true;
+
+        return false;
+    }
+
+    private static int filterLastEpisodeNumber(String movieName, String directory) {
+        File temp = new File(directory+"\\"+movieName);
+        return 0;
+    }
+
+    private static void lastEpisodeOfSerie(File aux, String serieName) {
+        File[] subFiles = null;
+        while (aux != null) {
+            subFiles = aux.listFiles(new FilenameFilter() {
+                @Override
+                public boolean accept(File dir, String name) {
+                    if (name.contains("Season") || name.contains("Book") || name.contains("Temporada"))
+                        return true;
+                    return false;
+                }
+            });
+        }
+
+        File lastSeason = getLastSeasonFile(subFiles);
+    }
+
+    private static File getLastSeasonFile(File[] subFiles) {
+        if(subFiles[0].getName().co)
+    }*/
 
 }

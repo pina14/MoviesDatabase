@@ -12,11 +12,11 @@ create table movie(
 )
 
 create table actor(
-	actorName varchar(50) not null primary key
+	actorName varchar(50) primary key
 )
 
 create table genre(
-	genre varchar(25) not null primary key
+	genre varchar(25) primary key
 )
 
 create table movieActor(
@@ -24,8 +24,8 @@ create table movieActor(
 	actorName varchar(50),
 	movieTitle varchar(100),
 	primary key(movieID, actorName),
-	foreign key (movieID) references movie(ID),
-	foreign key (actorName) references actor (actorName)
+	foreign key (movieID) references movie(ID) on delete cascade,
+	foreign key (actorName) references actor (actorName) on delete cascade
 )
 
 create table movieGenre(
@@ -33,6 +33,18 @@ create table movieGenre(
 	genre varchar(25),
 	movieTitle varchar(100),
 	primary key(movieID, genre),
-	foreign key (movieID) references movie(ID),
-	foreign key (genre) references genre (genre)
+	foreign key (movieID) references movie(ID) on delete cascade,
+	foreign key (genre) references genre (genre) on delete cascade
+)
+
+create table dBase(
+	name varchar(100) primary key
+)
+
+create table movieDataBase(
+	movieID varchar(15),
+	dbName varchar(100),
+	primary key(movieID, dbName),
+	foreign key (movieID) references movie(ID) on delete cascade,
+	foreign key (dbName) references dBase (name)
 )

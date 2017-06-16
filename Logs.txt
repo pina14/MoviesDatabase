@@ -1,0 +1,16 @@
+inserted movie/series with title : Pirates of the Caribbean: At World`s End
+inserted actor : Johnny Depp
+inserted actor : Geoffrey Rush
+inserted actor : Orlando Bloom
+inserted actor : Keira Knightley
+inserted genre : Action
+inserted genre : Fantasy
+inserted movie actor : Johnny Depp (Pirates of the Caribbean: At World`s End)
+inserted movie actor : Geoffrey Rush (Pirates of the Caribbean: At World`s End)
+inserted movie actor : Orlando Bloom (Pirates of the Caribbean: At World`s End)
+inserted movie actor : Keira Knightley (Pirates of the Caribbean: At World`s End)
+inserted movie genre : Action (Pirates of the Caribbean: At World`s End)
+inserted movie genre : Adventure (Pirates of the Caribbean: At World`s End)
+inserted movie genre : Fantasy (Pirates of the Caribbean: At World`s End)
+inserted Database with name : test
+inserted movie tt0449088 in database test
